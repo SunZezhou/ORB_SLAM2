@@ -39,22 +39,25 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames,
 
 int main(int argc, char **argv)
 {
-    if(argc != 4)
-    {
-        cerr << endl << "Usage: ./mono_tum path_to_vocabulary path_to_settings path_to_sequence" << endl;
-        return 1;
-    }
+
+    // if(argc != 4)
+    // {
+    //     cerr << endl << "Usage: ./mono_tum path_to_vocabulary path_to_settings path_to_sequence" << endl;
+    //     return 1;
+    // }
 
     // Retrieve paths to images
     vector<string> vstrImageFilenames;
     vector<double> vTimestamps;
-    string strFile = string(argv[3])+"/rgb.txt";
+    string imageFile = "/home/zezhousun/Downloads/agribot_data";
+    string strFile = imageFile+"/rgb.txt";
     LoadImages(strFile, vstrImageFilenames, vTimestamps);
 
     int nImages = vstrImageFilenames.size();
-
+    string vocFile = "/home/zezhousun/Documents/ROB701/3rdparty/ORB_SLAM2/Vocabulary/ORBvoc.txt";
+    string yamlFile = "/home/zezhousun/Documents/ROB701/3rdparty/ORB_SLAM2/Examples/Monocular/agri.yaml";
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::MONOCULAR,true);
+    ORB_SLAM2::System SLAM(vocFile,yamlFile,ORB_SLAM2::System::MONOCULAR,true);
 
     // Vector for tracking time statistics
     vector<float> vTimesTrack;
@@ -66,16 +69,18 @@ int main(int argc, char **argv)
 
     // Main loop
     cv::Mat im;
+    cv::Rect roi(250, 180, 620, 700);
     for(int ni=0; ni<nImages; ni++)
     {
         // Read image from file
-        im = cv::imread(string(argv[3])+"/"+vstrImageFilenames[ni],CV_LOAD_IMAGE_UNCHANGED);
+        im = cv::imread(imageFile+"/"+vstrImageFilenames[ni],CV_LOAD_IMAGE_UNCHANGED);
+        im = im(roi);
         double tframe = vTimestamps[ni];
 
         if(im.empty())
         {
             cerr << endl << "Failed to load image at: "
-                 << string(argv[3]) << "/" << vstrImageFilenames[ni] << endl;
+                 << imageFile << "/" << vstrImageFilenames[ni] << endl;
             return 1;
         }
 
@@ -87,7 +92,7 @@ int main(int argc, char **argv)
 
         // Pass the image to the SLAM system
         SLAM.TrackMonocular(im,tframe);
-
+        cout << "tracking image: " << tframe << endl;
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
 #else
