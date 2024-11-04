@@ -152,7 +152,7 @@ void Viewer::Run()
     cv::Mat img_match;
     cv::drawMatches(img_1, keypoints_1, img_2, keypoints_2, matches, img_match);
     cv::imshow("ORB-SLAM2: matches",img_match);
-    cv::waitKey(mT*10);
+    cv::waitKey(mT*5);
  
         if(menuReset)
         {

@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 
         // Pass the image to the SLAM system
         SLAM.TrackMonocular(im,tframe);
-        cout << "tracking image: " << tframe << endl;
+        cout << "tracking image: " << std::fixed << tframe << endl;
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
 #else
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
         // if(ttrack<T)
         //     usleep((T-ttrack)*1e6);
 
-        usleep(1e6);
+        usleep(0.5*1e6);
     }
 
     // Stop all threads
