@@ -17,57 +17,66 @@
 * You should have received a copy of the GNU General Public License
 * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
 */
-
+ 
 #ifndef FRAMEDRAWER_H
 #define FRAMEDRAWER_H
-
+ 
 #include "Tracking.h"
 #include "MapPoint.h"
 #include "Map.h"
-
+ 
 #include<opencv2/core/core.hpp>
 #include<opencv2/features2d/features2d.hpp>
-
+ 
 #include<mutex>
-
-
+ 
+ 
 namespace ORB_SLAM2
 {
-
+ 
 class Tracking;
 class Viewer;
-
+ 
 class FrameDrawer
 {
 public:
     FrameDrawer(Map* pMap);
-
+ 
     // Update info from the last processed frame.
     void Update(Tracking *pTracker);
-
+ 
     // Draw last processed frame.
-    cv::Mat DrawFrame();
-
+    std::tuple<cv::Mat, cv::Mat, std::vector<cv::KeyPoint>, std::vector<cv::KeyPoint>,   vector<cv::DMatch> >  DrawFrame();
+    // std::vector<cv::KeyPoint>  keypoints_get();
+    // std:: vector<cv::DMatch> matches_get();
+ 
 protected:
-
+ 
     void DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText);
-
+ 
     // Info of the frame to be drawn
     cv::Mat mIm;
-    int N;
-    vector<cv::KeyPoint> mvCurrentKeys;
+    cv::Mat mIm_r;
+    int N,N1;
+    vector<cv::KeyPoint> mvCurrentKeys,mvlastkeys;
     vector<bool> mvbMap, mvbVO;
+     vector<bool> mvbMap1, mvbVO1;
+    Frame store_lastframe;
     bool mbOnlyTracking;
     int mnTracked, mnTrackedVO;
     vector<cv::KeyPoint> mvIniKeys;
     vector<int> mvIniMatches;
     int mState;
-
+ 
+    std::vector<cv::Point2f> vPrevMatched;
+    std::vector<int> vMatches12;
+     
+ 
     Map* mpMap;
-
+ 
     std::mutex mMutex;
 };
-
+ 
 } //namespace ORB_SLAM
-
+ 
 #endif // FRAMEDRAWER_H
